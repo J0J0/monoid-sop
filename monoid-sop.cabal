@@ -1,5 +1,5 @@
 name:                monoid-sop
-version:             0.1
+version:             0.2
 synopsis:            Semigroup and Monoid instances for product types using generics-sop
 description:         The cartesion product of a family of semigroups (resp. monoids) is a
                      semigroup (resp. monoid) under pointwise operations.
@@ -7,19 +7,20 @@ description:         The cartesion product of a family of semigroups (resp. mono
                      for product/record types that can be used to implement
                      Semigroup/Monoid instances for such types.
 category:            Generics
+
+cabal-version:       2.0
 license:             ISC
 license-file:        LICENSE
 author:              Johannes Witzig
 maintainer:          Johannes_W@quantentunnel.de
 build-type:          Simple
 extra-source-files:  ChangeLog.md
-cabal-version:       >=1.10
-tested-with:         GHC == 8.4.3
+tested-with:         GHC == 9.0.2
 
 library
   exposed-modules:     Generics.SOP.Monoid
-  build-depends:       base          >= 4.11  && < 5,
-                       generics-sop  >= 0.3.1 && < 0.4
+  build-depends:       base         ^>= 4.15,
+                       generics-sop ^>= 0.5.1.1
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -Wall

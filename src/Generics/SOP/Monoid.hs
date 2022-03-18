@@ -24,27 +24,24 @@
 -- >>> mempty :: X
 -- X () (Sum {getSum = 0}) ([],"")
 --
+-- (Note the explicit type constraints involving 'Compose' and 'I' from
+-- the @sop-core@ package in the types of 'gappend' and 'gempty'.
+-- Apparently, GHC is not smart enough to promote
+-- @All Semigroup xs@ to @All (Compose Semigroup I) xs)@
+-- as well as to infer the latter from
+-- @All (Compose Monoid I) xs@
+-- /generically/, but it seems to be able to sort everything out in
+-- /specific instances/ – as in the example above.)
 module Generics.SOP.Monoid (
       gappend
     , gempty
     ) where
 
-import Control.Applicative (liftA2)
 import Data.Function (on)
 import Generics.SOP
 
-gappend :: (IsProductType a xs, All Semigroup xs) => a -> a -> a
-gappend = (to .) . (gappend_SOP `on` from)
+gappend :: (IsProductType a xs, All (Compose Semigroup I) xs) => a -> a -> a
+gappend = (productTypeTo .) . ((<>) `on` productTypeFrom)
 
-gappend_SOP :: (All Semigroup xs) => SOP I '[xs] -> SOP I '[xs] -> SOP I '[xs]
-gappend_SOP (SOP (Z x)) (SOP (Z y)) = SOP $ Z $ gappend_NP x y
-
-gappend_NP :: (All Semigroup xs) => NP I xs -> NP I xs -> NP I xs
-gappend_NP = hcliftA2 (Proxy :: Proxy Semigroup) (liftA2 (<>))
-
-
-gempty :: (IsProductType a xs, All Monoid xs) => a
-gempty = to gempty_SOP
-
-gempty_SOP :: (All Monoid xs) => SOP I '[xs]
-gempty_SOP = SOP $ Z $ hcpure (Proxy :: Proxy Monoid) (I mempty)
+gempty :: (IsProductType a xs, All (Compose Semigroup I) xs, All (Compose Monoid I) xs) => a
+gempty = productTypeTo mempty
